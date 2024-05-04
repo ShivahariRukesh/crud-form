@@ -65,9 +65,36 @@ const formSlice = createSlice({
       localStorage.setItem("formData", JSON.stringify(deletedResult));
       return { ...state, userData: deletedResult };
     },
+
+    editFormData(state, action) {
+      const { name, email, phoneNumber, dob, address, profilePicture } =
+        action.payload;
+      const { city, district, province, country } = address;
+      return {
+        ...state,
+        attributes: {
+          name,
+          email,
+          phoneNumber,
+          dob,
+          address: {
+            city,
+            district,
+            province,
+            country,
+          },
+          profilePicture,
+        },
+      };
+    },
   },
 });
 
-export const { inputChange, submitFormData, deleteFormData, getFormData } =
-  formSlice.actions;
+export const {
+  inputChange,
+  submitFormData,
+  deleteFormData,
+  editFormData,
+  getFormData,
+} = formSlice.actions;
 export default formSlice.reducer;

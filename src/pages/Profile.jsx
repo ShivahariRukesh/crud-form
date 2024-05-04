@@ -5,11 +5,11 @@ import { useDispatch, useSelector } from "react-redux";
 
 export const Profile = () => {
   const dispatch = useDispatch();
-  const formData = useSelector((state) => state.form.userData);
   useEffect(() => {
     dispatch(getFormData());
   }, []);
 
+  const formData = useSelector((state) => state.form.userData);
   const storageItem = JSON.parse(localStorage.getItem("formData"));
   console.log("gg");
   useEffect(() => {
