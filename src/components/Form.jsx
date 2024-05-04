@@ -1,27 +1,23 @@
 import React, { useState, useEffect } from "react";
 import "./Form.css";
+import { useSelector, useDispatch } from "react-redux";
+import { inputChange, submitFormData } from "../features/form/formSlice";
+
 const Form = () => {
+  const dispatch = useDispatch();
+  const formData = useSelector((state) => state.form.attributes);
   const [countries, setCountries] = useState([]);
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phoneNumber: "",
-    dob: "",
-    address: {
-      city: "",
-      district: "",
-      province: "",
-      country: "Nepal",
-    },
-    profilePicture: null,
-  });
 
   useEffect(() => {
     async function fetchCountries() {
       try {
         const res = await fetch("https://restcountries.com/v3.1/all");
         const data = await res.json();
-        setCountries(data);
+
+        var countryName = [];
+        for (var i = 0; i < data.length; ++i)
+          countryName = [...countryName, data[i].name.common];
+        setCountries(countryName.sort());
       } catch (err) {
         console.log(err);
       }
@@ -30,41 +26,24 @@ const Form = () => {
   }, []);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
-
-  const handleAddressChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevState) => ({
-      ...prevState,
-      address: {
-        ...prevState.address,
-        [name]: value,
-      },
-    }));
-  };
-
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    setFormData((prevState) => ({
-      ...prevState,
-      profilePicture: file,
-    }));
+    const { name, value, files } = e.target;
+    let file;
+    if (files) {
+      file = files[0];
+    }
+    dispatch(inputChange({ name, value, file }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle form submission here
+    dispatch(submitFormData(formData));
+
     console.log(formData);
   };
   return (
     <div className="Form">
       <form onSubmit={handleSubmit}>
-        <label>Name:</label>
+        <label>Name*</label>
         <input
           type="text"
           name="name"
@@ -72,7 +51,7 @@ const Form = () => {
           onChange={handleChange}
           required
         />
-        <label>Email:</label>
+        <label>Email*</label>
         <input
           type="email"
           name="email"
@@ -80,7 +59,7 @@ const Form = () => {
           onChange={handleChange}
           required
         />
-        <label>Phone Number:</label>
+        <label>Phone Number*</label>
         <input
           type="tel"
           name="phoneNumber"
@@ -102,7 +81,7 @@ const Form = () => {
           name="city"
           placeholder="City"
           value={formData.address.city}
-          onChange={handleAddressChange}
+          onChange={handleChange}
           required
         />
         <input
@@ -110,13 +89,14 @@ const Form = () => {
           name="district"
           placeholder="District"
           value={formData.address.district}
-          onChange={handleAddressChange}
+          onChange={handleChange}
           required
         />
+        <label>Province:</label>
         <select
           name="province"
           value={formData.address.province}
-          onChange={handleAddressChange}
+          onChange={handleChange}
           required
         >
           <option value="">Select Province</option>
@@ -124,16 +104,17 @@ const Form = () => {
             <option key={i + 1} value={i + 1}>{`Province ${i + 1}`}</option>
           ))}
         </select>
+        <label>Country:</label>
         <select
           name="country"
           value={formData.address.country}
-          onChange={handleAddressChange}
+          onChange={handleChange}
           required
         >
           <option value="">Select Country</option>
-          {countries.map((country) => (
-            <option key={country.name.common} value={country.name.common}>
-              {country.name.common}
+          {countries?.map((country, index) => (
+            <option key={index} value={country}>
+              {country}
             </option>
           ))}
         </select>
@@ -141,10 +122,17 @@ const Form = () => {
         <input
           type="file"
           name="profilePicture"
-          onChange={handleFileChange}
+          onChange={handleChange}
           required
         />
         <button type="submit">Submit</button>
+        {formData.profilePicture && (
+          <img
+            src={formData.profilePicture}
+            alt="selected"
+            style={{ maxWidth: "100%" }}
+          />
+        )}
       </form>
     </div>
   );
