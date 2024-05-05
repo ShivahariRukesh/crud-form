@@ -124,7 +124,7 @@ const formSlice = createSlice({
         }
       });
       localStorage.setItem("formData", JSON.stringify(editedItem));
-      return { ...initialState, userData };
+      return { ...initialState, userData: state.userData };
     },
   },
 });

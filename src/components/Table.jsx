@@ -7,7 +7,6 @@ import {
   editFillForm,
 } from "../features/form/formSlice";
 const Table = (props) => {
-  console.log(props.editButton);
   const [currentPage, setCurrentPage] = useState(0);
 
   const dispatch = useDispatch();
@@ -16,10 +15,9 @@ const Table = (props) => {
   const currentItems = formData.slice(currentPage * 5, (currentPage + 1) * 5);
   useEffect(() => {
     dispatch(getFormData());
-  }, []);
+  }, [props.editButton]);
 
   function handleEdit(user) {
-    console.log(user);
     dispatch(editFillForm(user));
     props.toggleEditButton(true);
   }
@@ -29,21 +27,17 @@ const Table = (props) => {
       <table className="user-table">
         <thead>
           <tr>
+            <th>Profile Pic</th>
             <th>Name</th>
             <th>Email</th>
             <th>Phone Number</th>
-            {/* <th>Address</th> */}
-            <th>Profile Picture</th>
+
             <th>Action</th>
           </tr>
         </thead>
         <tbody>
           {currentItems.map((user, index) => (
             <tr key={index}>
-              <td>{user.name}</td>
-              <td>{user.email}</td>
-              <td>{user.phoneNumber}</td>
-              {/* <td>{user.address}</td> */}
               <td>
                 {user.profilePicture && (
                   <img
@@ -53,6 +47,10 @@ const Table = (props) => {
                   />
                 )}
               </td>
+              <td>{user.name}</td>
+              <td>{user.email}</td>
+              <td>{user.phoneNumber}</td>
+
               <td>
                 <button
                   onClick={() => {
@@ -64,7 +62,7 @@ const Table = (props) => {
                 <button
                   style={{
                     backgroundColor: "red",
-                    cursor: `${props.editButton ? "not-allowed" : "allowed"}`,
+                    cursor: `${props.editButton ? "not-allowed" : ""}`,
                   }}
                   disabled={props.editButton}
                   onClick={() => {
