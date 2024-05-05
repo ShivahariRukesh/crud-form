@@ -4,11 +4,12 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   getFormData,
   deleteFormData,
-  editFormData,
+  editFillForm,
 } from "../features/form/formSlice";
-const Table = () => {
+const Table = (props) => {
+  console.log(props.editButton);
   const [currentPage, setCurrentPage] = useState(0);
-  const [editButton, setEditButton] = useState(false);
+
   const dispatch = useDispatch();
   const formData = useSelector((state) => state.form.userData);
 
@@ -17,10 +18,12 @@ const Table = () => {
     dispatch(getFormData());
   }, []);
 
-  const handleEdit = () => {
-    dispatch(editFormData(user));
-    setEditButton(true);
-  };
+  function handleEdit(user) {
+    console.log(user);
+    dispatch(editFillForm(user));
+    props.toggleEditButton(true);
+  }
+
   return (
     <div>
       <table className="user-table">
@@ -51,13 +54,24 @@ const Table = () => {
                 )}
               </td>
               <td>
-                <button onClick={handleEdit}>Edit</button>
                 <button
+                  onClick={() => {
+                    handleEdit(user);
+                  }}
+                >
+                  Edit
+                </button>
+                <button
+                  style={{
+                    backgroundColor: "red",
+                    cursor: `${props.editButton ? "not-allowed" : "allowed"}`,
+                  }}
+                  disabled={props.editButton}
                   onClick={() => {
                     dispatch(deleteFormData(user));
                   }}
                 >
-                  Delete
+                  {props.editButton ? "Disabled" : "Delete"}
                 </button>
               </td>
             </tr>

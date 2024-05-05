@@ -1,11 +1,7 @@
 import React, { useState } from "react";
 import Form from "../components/Form";
 import Table from "../components/Table";
-const Home = () => {
-  const [editButton, setEditButton] = useState(false);
-  function toggleEditButton() {
-    setEditButton((prev) => !prev);
-  }
+const Home = ({ toggleEditButton, editButton }) => {
   return (
     <div
       style={{
@@ -13,8 +9,8 @@ const Home = () => {
         justifyContent: "center",
       }}
     >
-      <Form />
-      <Table />
+      <Form toggleEditButton={toggleEditButton} editButton={editButton} />
+      <Table toggleEditButton={toggleEditButton} editButton={editButton} />
     </div>
   );
 };

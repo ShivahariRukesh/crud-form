@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   attributes: {
+    id: "",
     name: "",
     email: "",
     phoneNumber: "",
@@ -32,7 +33,7 @@ const formSlice = createSlice({
         state.attributes.address[name] = value;
       } else if (name === "profilePicture") {
         console.log(file);
-        state.attributes[name] = URL.createObjectURL(file);
+        state.attributes[name] = file;
       } else {
         state.attributes[name] = value;
       }
@@ -44,7 +45,13 @@ const formSlice = createSlice({
     },
     submitFormData(state, action) {
       const storedItem = JSON.parse(localStorage.getItem("formData")) || [];
-      storedItem.push(action.payload);
+      let len = storedItem?.length;
+      if (len > 1) {
+        if (len === storedItem[len - 1].id) {
+          len = len + 10;
+        }
+      }
+      storedItem.push({ ...action.payload, id: len });
       localStorage.setItem("formData", JSON.stringify(storedItem));
       return {
         ...initialState,
@@ -66,13 +73,15 @@ const formSlice = createSlice({
       return { ...state, userData: deletedResult };
     },
 
-    editFormData(state, action) {
-      const { name, email, phoneNumber, dob, address, profilePicture } =
+    editFillForm(state, action) {
+      const { id, name, email, phoneNumber, dob, address, profilePicture } =
         action.payload;
       const { city, district, province, country } = address;
+
       return {
         ...state,
         attributes: {
+          id,
           name,
           email,
           phoneNumber,
@@ -87,6 +96,36 @@ const formSlice = createSlice({
         },
       };
     },
+    editFormData(state, action) {
+      const { id, name, email, phoneNumber, dob, address, profilePicture } =
+        action.payload;
+      const { city, district, province, country } = address;
+
+      const storedItem = JSON.parse(localStorage.getItem("formData"));
+      let editedItem = storedItem.map((item) => {
+        if (item.id === id) {
+          return {
+            ...action.payload,
+            id,
+            name,
+            email,
+            phoneNumber,
+            dob,
+            address: {
+              city,
+              district,
+              province,
+              country,
+            },
+            profilePicture,
+          };
+        } else {
+          return item;
+        }
+      });
+      localStorage.setItem("formData", JSON.stringify(editedItem));
+      return { ...initialState, userData };
+    },
   },
 });
 
@@ -95,6 +134,7 @@ export const {
   submitFormData,
   deleteFormData,
   editFormData,
+  editFillForm,
   getFormData,
 } = formSlice.actions;
 export default formSlice.reducer;

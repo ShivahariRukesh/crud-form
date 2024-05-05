@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from "react";
 import "./Form.css";
 import { useSelector, useDispatch } from "react-redux";
-import { inputChange, submitFormData } from "../features/form/formSlice";
+import {
+  inputChange,
+  submitFormData,
+  editFormData,
+} from "../features/form/formSlice";
 
-const Form = () => {
+const Form = (props) => {
   const dispatch = useDispatch();
   const formData = useSelector((state) => state.form.attributes);
   const [countries, setCountries] = useState([]);
@@ -29,7 +33,7 @@ const Form = () => {
     const { name, value, files } = e.target;
     let file;
     if (files) {
-      file = files[0];
+      file = URL.createObjectURL(files[0]);
     }
     dispatch(inputChange({ name, value, file }));
   };
@@ -40,9 +44,13 @@ const Form = () => {
 
     console.log(formData);
   };
+  function handleEdit() {
+    dispatch(editFormData(formData));
+    props.toggleEditButton(false);
+  }
   return (
     <div className="Form">
-      <form onSubmit={handleSubmit}>
+      <form>
         <label>Name*</label>
         <input
           type="text"
@@ -125,7 +133,15 @@ const Form = () => {
           onChange={handleChange}
           required
         />
-        <button type="submit">Submit</button>
+        {props.editButton ? (
+          <button type="submit" onClick={handleEdit}>
+            Edit
+          </button>
+        ) : (
+          <button type="submit" onClick={handleSubmit}>
+            Submit
+          </button>
+        )}
         {formData.profilePicture && (
           <img
             src={formData.profilePicture}
