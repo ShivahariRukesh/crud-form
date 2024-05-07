@@ -48,6 +48,25 @@ const Form = (props) => {
     fetchCountries();
   }, []);
 
+  function mouseHover() {
+    const butt = document.getElementById("submit");
+    console.log(validate);
+    if (
+      !(
+        validate.name &&
+        validate.email &&
+        !validate.emptyValue &&
+        validate.phoneNumber
+      )
+    ) {
+      if (butt.style.marginLeft === "150px") {
+        butt.style.marginLeft = "0px";
+      } else {
+        butt.style.marginLeft = "150px";
+      }
+    }
+  }
+
   const handleChange = (e) => {
     const { name, value, files } = e.target;
 
@@ -57,13 +76,27 @@ const Form = (props) => {
     }
 
     dispatch(inputChange({ name, value, file }));
-
-    if (name === "email" || name === "phoneNumber" || name === "name") {
-      let val = validateInput(name, value);
-
-      setValidate((prev) => {
-        return { ...prev, [name]: val };
-      });
+    console.log("formdata", formData);
+    let val;
+    if (name !== "profilePicture") {
+      if (name === "email" || name === "phoneNumber" || name === "name") {
+        val = validateInput(name, value);
+        setValidate((prev) => {
+          return { ...prev, [name]: val };
+        });
+      }
+      if (
+        name === "city" ||
+        name === "province" ||
+        name === "name" ||
+        name === "district" ||
+        name === "coutnry"
+      ) {
+        val = validateEmptyValue(formData);
+        setValidate((prev) => {
+          return { ...prev, emptyValue: val };
+        });
+      }
     }
   };
 
@@ -217,10 +250,12 @@ const Form = (props) => {
           </button>
         ) : (
           <button
+            id="submit"
             className="submitButton"
             style={{ width: "95px", marginLeft: "150px" }}
             type="submit"
             onClick={handleSubmit}
+            onMouseOver={mouseHover}
           >
             Submit
           </button>

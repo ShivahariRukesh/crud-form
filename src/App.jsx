@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Profile } from "./pages/Profile";
 import Home from "./pages/Home";
 import "./App.css";
+
 function App() {
   const [togglePage, setTogglePage] = useState(true);
   const [editButton, setEditButton] = useState(false);
