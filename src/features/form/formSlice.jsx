@@ -31,11 +31,26 @@ const formSlice = createSlice({
         name === "district"
       ) {
         state.attributes.address[name] = value;
+        // return {
+        //   ...state,
+        //   attributes: {
+        //     ...state.attributes,
+        //     address: { ...state.attributes.address, [name]: value },
+        //   },
+        // };
       } else if (name === "profilePicture") {
         console.log(file);
         state.attributes[name] = file;
+        // return {
+        //   ...state,
+        //   attributes: { ...state.attributes, [name]: file },
+        // };
       } else {
         state.attributes[name] = value;
+        // return {
+        //   ...state,
+        //   attributes: { ...state.attributes, [name]: value },
+        // };
       }
     },
     getFormData(state) {

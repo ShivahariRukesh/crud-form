@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./Form.css";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -10,6 +10,8 @@ import { validateEmptyValue, validateInput } from "../functions";
 const Form = (props) => {
   const dispatch = useDispatch();
   const formData = useSelector((state) => state.form.attributes);
+
+  const inputRef = useRef([]);
 
   const [countries, setCountries] = useState([]);
   const [validate, setValidate] = useState({
@@ -31,6 +33,7 @@ const Form = (props) => {
       });
     }
   }, [props.editButton]);
+
   useEffect(() => {
     async function fetchCountries() {
       try {
@@ -49,8 +52,10 @@ const Form = (props) => {
   }, []);
 
   function mouseHover() {
-    const butt = document.getElementById("submit");
+    console.log("Ref", inputRef.current[1]?.value);
     console.log(validate);
+    const butt = document.getElementById("submit");
+    // console.log(validate);
     if (
       !(
         validate.name &&
@@ -78,6 +83,7 @@ const Form = (props) => {
     dispatch(inputChange({ name, value, file }));
     console.log("formdata", formData);
     let val;
+
     if (name !== "profilePicture") {
       if (name === "email" || name === "phoneNumber" || name === "name") {
         val = validateInput(name, value);
@@ -88,25 +94,34 @@ const Form = (props) => {
       if (
         name === "city" ||
         name === "province" ||
-        name === "name" ||
+        name === "dob" ||
         name === "district" ||
-        name === "coutnry"
+        name === "country"
       ) {
-        val = validateEmptyValue(formData);
-        setValidate((prev) => {
-          return { ...prev, emptyValue: val };
-        });
+        if (
+          !(
+            inputRef.current[0]?.value === "" ||
+            inputRef.current[1]?.value === "" ||
+            inputRef.current[2]?.value === "" ||
+            inputRef.current[3]?.value === "" ||
+            inputRef.current[4]?.value === ""
+          )
+        ) {
+          setValidate((prev) => {
+            return { ...prev, emptyValue: false };
+          });
+        }
       }
     }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    let emptyFieldValidation = validateEmptyValue(formData);
+    // let emptyFieldValidation = validateEmptyValue(formData);
 
-    setValidate((prev) => {
-      return { ...prev, emptyValue: emptyFieldValidation };
-    });
+    // setValidate((prev) => {
+    //   return { ...prev, emptyValue: emptyFieldValidation };
+    // });
 
     if (
       validate.name &&
@@ -121,13 +136,12 @@ const Form = (props) => {
 
   function handleEdit(e) {
     e.preventDefault();
-    console.log("FormData", formData);
 
     let emptyFieldValidation = validateEmptyValue(formData);
     setValidate((prev) => {
       return { ...prev, emptyValue: emptyFieldValidation };
     });
-    console.log(validate);
+
     if (
       validate.name &&
       validate.email &&
@@ -185,6 +199,7 @@ const Form = (props) => {
           name="dob"
           value={formData.dob}
           onChange={handleChange}
+          ref={(el) => (inputRef.current[0] = el)}
           required
         />
         <label>Address</label>
@@ -194,6 +209,7 @@ const Form = (props) => {
           placeholder="City"
           value={formData.address.city}
           onChange={handleChange}
+          ref={(el) => (inputRef.current[1] = el)}
           required
         />
         <input
@@ -202,6 +218,7 @@ const Form = (props) => {
           placeholder="District"
           value={formData.address.district}
           onChange={handleChange}
+          ref={(el) => (inputRef.current[2] = el)}
           required
         />
         <label>Province</label>
@@ -209,6 +226,7 @@ const Form = (props) => {
           name="province"
           value={formData.address.province}
           onChange={handleChange}
+          ref={(el) => (inputRef.current[3] = el)}
           required
         >
           <option value="">Select Province</option>
@@ -221,6 +239,7 @@ const Form = (props) => {
           name="country"
           value={formData.address.country}
           onChange={handleChange}
+          ref={(el) => (inputRef.current[4] = el)}
           required
         >
           <option value="">Select Country</option>

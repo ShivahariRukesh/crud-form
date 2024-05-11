@@ -17,16 +17,31 @@ export function validateInput(type, input) {
   return regex.test(input);
 }
 
-export function validateEmptyValue(input) {
-  if (
-    input.dob === "" ||
-    input.address.city === "" ||
-    input.address.district === "" ||
-    input.address.province === "" ||
-    input.address.country === ""
-  ) {
-    return true;
-  } else {
-    return false;
+export function validateEmptyValue(name) {
+  switch (name) {
+    case "dob":
+      return 0;
+
+    case "city":
+      return 1;
+    case "district":
+      return 2;
+    case "province":
+      return 3;
+    case "country":
+      return 4;
+    default:
+      return;
   }
+  // if (
+  //   input.dob === "" ||
+  //   input.address.city === "" ||
+  //   input.address.district === "" ||
+  //   input.address.province === "" ||
+  //   input.address.country === ""
+  // ) {
+  //   return true;
+  // } else {
+  //   return false;
+  // }
 }
