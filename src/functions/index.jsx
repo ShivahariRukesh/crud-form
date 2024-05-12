@@ -33,15 +33,4 @@ export function validateEmptyValue(name) {
     default:
       return;
   }
-  // if (
-  //   input.dob === "" ||
-  //   input.address.city === "" ||
-  //   input.address.district === "" ||
-  //   input.address.province === "" ||
-  //   input.address.country === ""
-  // ) {
-  //   return true;
-  // } else {
-  //   return false;
-  // }
 }

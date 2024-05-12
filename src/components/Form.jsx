@@ -6,7 +6,7 @@ import {
   submitFormData,
   editFormData,
 } from "../features/form/formSlice";
-import { validateEmptyValue, validateInput } from "../functions";
+import { validateInput } from "../functions";
 const Form = (props) => {
   const dispatch = useDispatch();
   const formData = useSelector((state) => state.form.attributes);
@@ -52,17 +52,21 @@ const Form = (props) => {
   }, []);
 
   function mouseHover() {
-    console.log("Ref", inputRef.current[1]?.value);
     console.log(validate);
-    const butt = document.getElementById("submit");
-    // console.log(validate);
+
+    const butt = Boolean(document.getElementById("submit"))
+      ? document.getElementById("submit")
+      : document.getElementById("edit");
+    console.log(validate);
     if (
       !(
         validate.name &&
         validate.email &&
+        // !(validate.emptyValue || validate.emptyValue === undefined) &&
         !validate.emptyValue &&
         validate.phoneNumber
-      )
+      ) ||
+      validate.emptyValue === undefined
     ) {
       if (butt.style.marginLeft === "150px") {
         butt.style.marginLeft = "0px";
@@ -74,6 +78,10 @@ const Form = (props) => {
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
+
+    inputRef.current?.forEach((item, index) =>
+      console.log("Ref", index, item.value)
+    );
 
     let file;
     if (files) {
@@ -99,16 +107,18 @@ const Form = (props) => {
         name === "country"
       ) {
         if (
-          !(
-            inputRef.current[0]?.value === "" ||
-            inputRef.current[1]?.value === "" ||
-            inputRef.current[2]?.value === "" ||
-            inputRef.current[3]?.value === "" ||
-            inputRef.current[4]?.value === ""
-          )
+          Boolean(inputRef.current[0].value) &&
+          Boolean(inputRef.current[1].value) &&
+          Boolean(inputRef.current[2].value) &&
+          Boolean(inputRef.current[3].value) &&
+          Boolean(inputRef.current[4].value)
         ) {
           setValidate((prev) => {
             return { ...prev, emptyValue: false };
+          });
+        } else {
+          setValidate((prev) => {
+            return { ...prev, emptyValue: true };
           });
         }
       }
@@ -127,7 +137,7 @@ const Form = (props) => {
       validate.name &&
       validate.email &&
       validate.phoneNumber &&
-      !emptyFieldValidation
+      !validate.emptyValue
     ) {
       dispatch(submitFormData(formData));
       console.log(formData);
@@ -137,16 +147,11 @@ const Form = (props) => {
   function handleEdit(e) {
     e.preventDefault();
 
-    let emptyFieldValidation = validateEmptyValue(formData);
-    setValidate((prev) => {
-      return { ...prev, emptyValue: emptyFieldValidation };
-    });
-
     if (
       validate.name &&
       validate.email &&
       validate.phoneNumber &&
-      !emptyFieldValidation
+      !validate.emptyValue
     ) {
       dispatch(editFormData(formData));
       props.toggleEditButton(false);
@@ -261,9 +266,11 @@ const Form = (props) => {
           : ""}
         {props.editButton ? (
           <button
+            id="edit"
             type="submit"
             style={{ width: "95px", marginLeft: "150px" }}
             onClick={handleEdit}
+            onMouseOver={mouseHover}
           >
             Edit
           </button>
